@@ -9,12 +9,14 @@ pragma solidity ^0.8.0;
  */
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
+
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
      */
     function toString(uint256 value) internal pure returns (string memory) {
         // Inspired by OraclizeAPI's implementation - MIT licence
         // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+
         if (value == 0) {
             return "0";
         }
@@ -32,6 +34,7 @@ library Strings {
         }
         return string(buffer);
     }
+
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
      */
@@ -47,6 +50,7 @@ library Strings {
         }
         return toHexString(value, length);
     }
+
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
@@ -1488,23 +1492,31 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
   
     mapping(address => uint32) public addressMintedBalance;
     mapping(bytes => bool) public claimSigUsed;
+
+
   
-    constructor() ERC721("WRTEST 002", "WMR") { }
+    constructor() ERC721("Woman Rise", "WMR") { }
 
     function supportsInterface(bytes4 _interfaceId) public view virtual override(IERC165, ERC721Enumerable) returns (bool) {
-        return _interfaceId == type(IERC2981).interfaceId || super.supportsInterface(_interfaceId);
+        return
+            _interfaceId == type(IERC2981).interfaceId ||
+            super.supportsInterface(_interfaceId);
     }
+    
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount)
     {
         require(_exists(_tokenId), "ERC2981RoyaltyStandard: Royalty info for nonexistent token");
         return (owner(), _salePrice / 10); // 10 percent
     }
-    function mint(uint32 _mintAmount) public payable {
-        mint(_mintAmount, "");
-    }
+
+        function mint(uint32 _mintAmount) public payable {
+            mint(_mintAmount, "");
+        }
+
     // public
     function mint(uint32 _mintAmount, bytes memory _signature) public payable {
         require(msg.value == 7e16 * _mintAmount, "Ethereum amount sent is not correct!");
+
         if (!mintingEnabled) {
             require(onlyWhitelisted, "Minting is not enabled!");
             require(isWhitelisted(msg.sender, _signature), "User is not whitelisted!");
@@ -1520,6 +1532,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         require(totalSupply() + _mintAmount < 9_800, "Request will exceed max supply!");
         _mintLoop(msg.sender, _mintAmount);
     }
+
     function _mintLoop(address to, uint32 amount) private {
         addressMintedBalance[to] += amount;
         for (uint i; i < amount; i++ ) {
@@ -1527,6 +1540,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
             _tokenIdTracker.increment();
         }
     }
+
     function claimAirdrop(bytes memory _signature, uint _addressAirDropNumber) public {
         require(reserve > 0, "No more tokens left in reserve!");
         require(!claimSigUsed[_signature], "Can only use a claim signature once!");
@@ -1537,12 +1551,14 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         addressMintedBalance[msg.sender]++;
         reserve--;
     }
+
     function isWhitelisted(address _wallet, bytes memory _signature) private view returns(bool) {
         return ECDSA.recover(
             ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(_wallet, "whitelist"))),
             _signature
         ) == owner();
     }
+
     function canClaimAirdrop(
         address _wallet,
         bytes memory _signature,
@@ -1556,6 +1572,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
             _signature
         ) == owner();
     }
+
     function walletOfOwner(address _owner) public view returns (uint256[] memory)
     {
         uint256 ownerTokenCount = balanceOf(_owner);
@@ -1565,26 +1582,35 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         }
         return tokenIds;
     }
+
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory)
     {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
     }
+
     //only owner
+
     function ownerMintFromReserve(uint8 amount) public onlyOwner {
         require(reserve >= amount, "Not enough tokens left in reserve!");
         _mintLoop(msg.sender, amount);
         reserve -= amount;
     }
+
     function setBaseURI(string memory _newBaseURI) external onlyOwner {
         baseURI = _newBaseURI;
     }
+    
+
     function toggleMinting() external onlyOwner {
         mintingEnabled = !mintingEnabled;
     }
+    
     function toggleOnlyWhitelisted() external onlyOwner {
         onlyWhitelisted = !onlyWhitelisted;
     }
+    
     function withdraw() external onlyOwner {
         bool success = payable(msg.sender).send(address(this).balance);
         require(success, "Payment did not go through!");
