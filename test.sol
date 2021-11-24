@@ -1490,7 +1490,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
     bool public onlyWhitelisted;
     address[] public whitelistedAddresses;
   
-    mapping(address => uint32) public addressMintedBalance;
+    mapping(address => uint256) public addressMintedBalance;
     mapping(bytes => bool) public claimSigUsed;
 
 
@@ -1509,12 +1509,12 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         return (owner(), _salePrice / 10); // 10 percent
     }
 
-        function mint(uint32 _mintAmount) public payable {
+        function mint(uint256 _mintAmount) public payable {
             mint(_mintAmount, "");
         }
 
     // public
-    function mint(uint32 _mintAmount, bytes memory _signature) public payable {
+    function mint(uint256 _mintAmount, bytes memory _signature) public payable {
         require(msg.value == 7e16 * _mintAmount, "Ethereum amount sent is not correct!");
 
         if (!mintingEnabled) {
@@ -1533,9 +1533,9 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         _mintLoop(msg.sender, _mintAmount);
     }
 
-    function _mintLoop(address to, uint32 amount) private {
+    function _mintLoop(address to, uint256 amount) private {
         addressMintedBalance[to] += amount;
-        for (uint i; i < amount; i++ ) {
+        for (uint32 i; i < amount; i++ ) {
             _safeMint(to, _tokenIdTracker.current());
             _tokenIdTracker.increment();
         }
