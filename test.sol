@@ -1,15 +1,14 @@
+
+
+
 pragma solidity ^0.8.0;
-
 // SPDX-License-Identifier: GPL-3.0
-
 // File: @openzeppelin/contracts/utils/Strings.sol
-
 /**
  * @dev String operations.
  */
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
-
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
      */
@@ -34,7 +33,6 @@ library Strings {
         }
         return string(buffer);
     }
-
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
      */
@@ -50,7 +48,6 @@ library Strings {
         }
         return toHexString(value, length);
     }
-
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
@@ -66,9 +63,7 @@ library Strings {
         return string(buffer);
     }
 }
-
 // File: @openzeppelin/contracts/utils/Context.sol
-
 /**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -88,9 +83,7 @@ abstract contract Context {
         return msg.data;
     }
 }
-
 // File: @openzeppelin/contracts/access/Ownable.sol
-
 /**
  * @dev Contract module which provides a basic access control mechanism, where
  * there is an account (an owner) that can be granted exclusive access to
@@ -144,9 +137,7 @@ abstract contract Ownable is Context {
         emit OwnershipTransferred(oldOwner, newOwner);
     }
 }
-
 // File: @openzeppelin/contracts/utils/Address.sol
-
 /**
  * @dev Collection of functions related to the address type
  */
@@ -359,7 +350,6 @@ library Address {
         }
     }
 }
-
 // File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
 
 /**
@@ -384,7 +374,6 @@ interface IERC721Receiver {
         bytes calldata data
     ) external returns (bytes4);
 }
-
 // File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 
 /**
@@ -407,10 +396,7 @@ interface IERC165 {
      */
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
-
 // File: @openzeppelin/contracts/utils/introspection/ERC165.sol
-
-
 /**
  * @dev Implementation of the {IERC165} interface.
  *
@@ -433,7 +419,6 @@ abstract contract ERC165 is IERC165 {
         return interfaceId == type(IERC165).interfaceId;
     }
 }
-
 // File @openzeppelin/contracts/interfaces/IERC2981.sol
 
 /**
@@ -452,9 +437,7 @@ interface IERC2981 is IERC165 {
         view
         returns (address receiver, uint256 royaltyAmount);
 }
-
 // File: @openzeppelin/contracts/token/ERC721/IERC721.sol
-
 /**
  * @dev Required interface of an ERC721 compliant contract.
  */
@@ -1043,10 +1026,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         uint256 tokenId
     ) internal virtual {}
 }
-
 // File: @openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol
-
-
 /**
  * @dev This implements an optional extension of {ERC721} defined in the EIP that adds
  * enumerability of all the token ids in the contract as well as all token ids owned by each
@@ -1202,9 +1182,7 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
         _allTokens.pop();
     }
 }
-
 // File @opnezeppelin/contracts/utils/cryptography/ECDSA.sol)
-
 /**
  * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
  *
@@ -1432,9 +1410,7 @@ library ECDSA {
         return keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
     }
 }
-
 // File @openzeppelin/contracts/utils/Counters.sol
-
 /**
  * @title Counters
  * @author Matt Condon (@shrugs)
@@ -1473,12 +1449,8 @@ library Counters {
         counter._value = 0;
     }
 }
-
 // File: contracts/WomanRise.sol
-
-
 contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
-  
     using Strings for uint256;
     using Counters for Counters.Counter;
 
@@ -1488,60 +1460,49 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
     uint8 public reserve = 200;
     bool public mintingEnabled;
     bool public onlyWhitelisted;
-    address[] public whitelistedAddresses;
   
-    mapping(address => uint256) public addressMintedBalance;
+    mapping(address => uint32) public addressMintedBalance;
     mapping(bytes => bool) public claimSigUsed;
 
-
-  
-    constructor() ERC721("Woman Rise", "WMR") { }
+    constructor() ERC721("WR TEST", "WR TEST") { }
 
     function supportsInterface(bytes4 _interfaceId) public view virtual override(IERC165, ERC721Enumerable) returns (bool) {
-        return
-            _interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(_interfaceId);
+        return _interfaceId == type(IERC2981).interfaceId || super.supportsInterface(_interfaceId);
     }
-    
-    function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount)
-    {
+
+    function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
         require(_exists(_tokenId), "ERC2981RoyaltyStandard: Royalty info for nonexistent token");
         return (owner(), _salePrice / 10); // 10 percent
     }
 
-        function mint(uint256 _mintAmount) public payable {
-            mint(_mintAmount, "");
-        }
+    function mint(uint32 _mintAmount) public payable {
+        mint(_mintAmount, "");
+    }
 
     // public
-    function mint(uint256 _mintAmount, bytes memory _signature) public payable {
-        require(msg.value == 7e16 * _mintAmount, "Ethereum amount sent is not correct!");
-
-        if (!mintingEnabled) {
+    function mint(uint32 _mintAmount, bytes memory _signature) public payable {
+        require(msg.value == 7e16 * uint(_mintAmount), "Ethereum amount sent is not correct!");
+        require(addressMintedBalance[msg.sender] + _mintAmount <= 10 && _mintAmount != 0,"Invalid can not mint more than 10!");
+        
+        if (!mintingEnabled) {            
             require(onlyWhitelisted, "Minting is not enabled!");
-            require(isWhitelisted(msg.sender, _signature), "User is not whitelisted!");
-            require(
-                addressMintedBalance[msg.sender] + _mintAmount <= 10 &&
-                _mintAmount != 0,
-                "Invalid request amount!"
-            );
+            require(isWhitelisted(msg.sender, _signature), "User is not whitelisted!");            
             _mintLoop(msg.sender, _mintAmount);
             return;
         }
-        require(_mintAmount != 0 && _mintAmount <= 10, "Invalid request amount!");
         require(totalSupply() + _mintAmount < 9_800, "Request will exceed max supply!");
         _mintLoop(msg.sender, _mintAmount);
     }
 
-    function _mintLoop(address to, uint256 amount) private {
+    function _mintLoop(address to, uint32 amount) private {
         addressMintedBalance[to] += amount;
-        for (uint32 i; i < amount; i++ ) {
+        for (uint i; i < amount; i++ ) {
             _safeMint(to, _tokenIdTracker.current());
             _tokenIdTracker.increment();
         }
     }
 
-    function claimAirdrop(bytes memory _signature, uint _addressAirDropNumber) public {
+    function claimAirdrop(bytes calldata _signature, uint _addressAirDropNumber) public {
         require(reserve > 0, "No more tokens left in reserve!");
         require(!claimSigUsed[_signature], "Can only use a claim signature once!");
         require(canClaimAirdrop(msg.sender, _signature, _addressAirDropNumber), "User not eligable to claim an airdrop!");
@@ -1561,7 +1522,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
 
     function canClaimAirdrop(
         address _wallet,
-        bytes memory _signature,
+        bytes calldata _signature,
         uint256 _addressAirDropNumber
     ) private view returns(bool) {
         return ECDSA.recover(
@@ -1583,15 +1544,13 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         return tokenIds;
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory)
+    function tokenURI(uint256 tokenId) public view override returns (string memory)
     {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+        return string(abi.encodePacked(baseURI, tokenId.toString(), ".json"));
     }
 
     //only owner
-
     function ownerMintFromReserve(uint8 amount) public onlyOwner {
         require(reserve >= amount, "Not enough tokens left in reserve!");
         _mintLoop(msg.sender, amount);
@@ -1600,17 +1559,16 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
 
     function setBaseURI(string memory _newBaseURI) external onlyOwner {
         baseURI = _newBaseURI;
-    }
-    
+    } 
 
     function toggleMinting() external onlyOwner {
         mintingEnabled = !mintingEnabled;
     }
-    
+
     function toggleOnlyWhitelisted() external onlyOwner {
         onlyWhitelisted = !onlyWhitelisted;
     }
-    
+
     function withdraw() external onlyOwner {
         bool success = payable(msg.sender).send(address(this).balance);
         require(success, "Payment did not go through!");
