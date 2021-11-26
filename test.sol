@@ -1,10 +1,11 @@
 pragma solidity ^0.8.0;
 // SPDX-License-Identifier: GPL-3.0
 // File: @openzeppelin/contracts/utils/Strings.sol
+// Developed By Crypto Sodi. 
+// Twitter https://twitter.com/cryptosodi
+// Property of Women Rise http://womenrise.art
 /**
- * @Developer By Crypto Sodi. 
- * @Twitter https://twitter.com/cryptosodi
- * @Property of Women Rise http://womenrise.art
+ * @dev String operations.
  */
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
@@ -1463,7 +1464,7 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
     mapping(address => uint32) public addressMintedBalance;
     mapping(bytes => bool) public claimSigUsed;
 
-    constructor() ERC721("WR TEST", "WR TEST") { }
+    constructor() ERC721("Women Rise", "WRNFT") { }
 
     function supportsInterface(bytes4 _interfaceId) public view virtual override(IERC165, ERC721Enumerable) returns (bool) {
         return _interfaceId == type(IERC2981).interfaceId || super.supportsInterface(_interfaceId);
