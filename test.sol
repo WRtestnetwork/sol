@@ -1,11 +1,10 @@
-
-
-
 pragma solidity ^0.8.0;
 // SPDX-License-Identifier: GPL-3.0
 // File: @openzeppelin/contracts/utils/Strings.sol
 /**
- * @dev String operations.
+ * @Developer By Crypto Sodi. 
+ * @Twitter https://twitter.com/cryptosodi
+ * @Property of Women Rise http://womenrise.art
  */
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
@@ -1520,16 +1519,10 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         ) == owner();
     }
 
-    function canClaimAirdrop(
-        address _wallet,
-        bytes calldata _signature,
-        uint256 _addressAirDropNumber
-    ) private view returns(bool) {
+    function canClaimAirdrop(address _wallet,bytes calldata _signature,uint256 _addressAirDropNumber) private view returns(bool) {
         return ECDSA.recover(
-            ECDSA.toEthSignedMessageHash(
-                // if it's the address's 3rd airdrop so _addressAirDropNumber = 3
-                keccak256(abi.encodePacked(_wallet, "airdrop", _addressAirDropNumber.toString()))
-            ),
+            // if it's the address's 3rd airdrop so _addressAirDropNumber = 3
+            ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(_wallet, "airdrop", _addressAirDropNumber.toString()))),
             _signature
         ) == owner();
     }
@@ -1569,7 +1562,8 @@ contract WomanRise is IERC2981, ERC721Enumerable, Ownable {
         onlyWhitelisted = !onlyWhitelisted;
     }
 
-    function withdraw() external onlyOwner {
+    function withdraw() external onlyOwner 
+    {
         bool success = payable(msg.sender).send(address(this).balance);
         require(success, "Payment did not go through!");
     }
